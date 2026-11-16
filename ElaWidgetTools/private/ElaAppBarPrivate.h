@@ -3,6 +3,8 @@
 #include "ElaPropertyMacro.h"
 #include "ElaWidgetToolsDef.h"
 
+#include <QPoint>
+
 class QLabel;
 class QScreen;
 class QHBoxLayout;

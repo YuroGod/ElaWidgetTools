@@ -123,7 +123,7 @@ void ElaNavigationStyle::drawControl(ControlElement element, const QStyleOption*
                 QFont iconFont = QFont("ElaAwesome");
                 iconFont.setPixelSize(fontPixelSize + 4);
                 painter->setFont(iconFont);
-                painter->drawText(QRect(itemRect.x(), itemRect.y(), _iconAreaWidth, itemRect.height()), Qt::AlignCenter, QChar(node->getAwesome()));
+                painter->drawText(QRect(itemRect.x(), itemRect.y(), _iconAreaWidth, itemRect.height()), Qt::AlignCenter, QChar::fromUcs2(node->getAwesome()));
                 painter->restore();
             }
 
@@ -185,7 +185,7 @@ void ElaNavigationStyle::drawControl(ControlElement element, const QStyleOption*
                         }
                     }
                     painter->translate(-expandIconRect.x() - (qreal)expandIconRect.width() / 2 + 1, -expandIconRect.y() - (qreal)expandIconRect.height() / 2);
-                    painter->drawText(expandIconRect, Qt::AlignVCenter, QChar(ElaIconType::AngleDown));
+                    painter->drawText(expandIconRect, Qt::AlignVCenter, QChar::fromUcs2(ElaIconType::AngleDown));
                     painter->restore();
                 }
                 if (node->getIsChildHasKeyPoints())

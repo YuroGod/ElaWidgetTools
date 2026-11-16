@@ -52,8 +52,30 @@ endif ()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::WidgetsPrivate
 )
+if (TARGET Qt${QT_VERSION_MAJOR}::WidgetsPrivate)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        Qt${QT_VERSION_MAJOR}::WidgetsPrivate
+    )
+else ()
+    # 部分 Linux 发行版提供 Qt 私有头文件，但不导出 WidgetsPrivate CMake 目标。
+    get_target_property(QT_CORE_INCLUDE_DIRS Qt${QT_VERSION_MAJOR}::Core INTERFACE_INCLUDE_DIRECTORIES)
+    foreach (QT_CORE_INCLUDE_DIR IN LISTS QT_CORE_INCLUDE_DIRS)
+        if (EXISTS "${QT_CORE_INCLUDE_DIR}/QtWidgets/${QT_VERSION}/QtWidgets/private/qtabbar_p.h")
+            set(QT_INCLUDE_DIR "${QT_CORE_INCLUDE_DIR}")
+            break ()
+        endif ()
+    endforeach ()
+    if (NOT QT_INCLUDE_DIR)
+        message(FATAL_ERROR "未找到 Qt ${QT_VERSION} 的 Widgets 私有开发头文件")
+    endif ()
+    foreach (QT_MODULE QtCore QtGui QtWidgets)
+        target_include_directories(${PROJECT_NAME} PRIVATE
+            "${QT_INCLUDE_DIR}/${QT_MODULE}/${QT_VERSION}"
+            "${QT_INCLUDE_DIR}/${QT_MODULE}/${QT_VERSION}/${QT_MODULE}"
+        )
+    endforeach ()
+endif ()
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PUBLIC
         D3D11

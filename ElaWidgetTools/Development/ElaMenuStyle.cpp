@@ -99,7 +99,7 @@ void ElaMenuStyle::drawControl(ControlElement element, const QStyleOption* optio
                 }
                 if (iconText.isEmpty() && menuIcon.isNull() && mopt->checked)
                 {
-                    iconText = QChar(ElaIconType::Check);
+                    iconText = QChar::fromUcs2(ElaIconType::Check);
                 }
                 if (!iconText.isEmpty())
                 {
@@ -135,7 +135,7 @@ void ElaMenuStyle::drawControl(ControlElement element, const QStyleOption* optio
                     QFont iconFont = QFont("ElaAwesome");
                     iconFont.setPixelSize(eApp->getFontPixelSize() + 5);
                     painter->setFont(iconFont);
-                    painter->drawText(QRect(menuRect.right() - 25, menuRect.y(), 25, menuRect.height()), Qt::AlignVCenter, QChar(ElaIconType::AngleRight));
+                    painter->drawText(QRect(menuRect.right() - 25, menuRect.y(), 25, menuRect.height()), Qt::AlignVCenter, QChar::fromUcs2(ElaIconType::AngleRight));
                     painter->restore();
                 }
                 painter->restore();

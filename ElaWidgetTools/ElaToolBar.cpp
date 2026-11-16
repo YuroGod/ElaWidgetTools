@@ -77,7 +77,7 @@ const QSize& ElaToolBar::getToolButtonSize() const
 QAction* ElaToolBar::addElaIconAction(ElaIconType::IconName icon, const QString& text)
 {
     QAction* action = new QAction(text, this);
-    action->setProperty("ElaIconType", QChar(icon));
+    action->setProperty("ElaIconType", QChar::fromUcs2(icon));
     action->setIcon(ElaIcon::getInstance()->getElaIcon(ElaIconType::Broom, 1));
     addAction(action);
     return action;
@@ -87,7 +87,7 @@ QAction* ElaToolBar::addElaIconAction(ElaIconType::IconName icon, const QString&
 {
     QAction* action = new QAction(text, this);
     action->setShortcut(shortcut);
-    action->setProperty("ElaIconType", QChar(icon));
+    action->setProperty("ElaIconType", QChar::fromUcs2(icon));
     action->setIcon(ElaIcon::getInstance()->getElaIcon(ElaIconType::Broom, 1));
     addAction(action);
     return action;

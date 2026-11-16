@@ -3,6 +3,7 @@
 #include "ElaExponentialBlur.h"
 
 #include <QDataStream>
+#include <QIODevice>
 #include <QPainter>
 #include <QPainterPath>
 #include <QtMath>

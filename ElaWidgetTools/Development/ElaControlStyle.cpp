@@ -121,7 +121,7 @@ void ElaControlStyle::drawStatusIcon(QPainter* painter, const QRectF& rect, ElaT
     iconFont.setPixelSize(qMax(1, qRound(rect.height() * 0.65)));
     painter->setFont(iconFont);
     painter->setPen(ElaThemeColor(themeMode, BasicTextInvert));
-    painter->drawText(rect, Qt::AlignCenter, QChar(icon));
+    painter->drawText(rect, Qt::AlignCenter, QChar::fromUcs2(icon));
     painter->restore();
 }
 

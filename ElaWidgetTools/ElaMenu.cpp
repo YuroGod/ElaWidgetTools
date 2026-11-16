@@ -81,14 +81,14 @@ ElaMenu* ElaMenu::addMenu(ElaIconType::IconName icon, const QString& title)
 {
     ElaMenu* menu = new ElaMenu(title, this);
     QMenu::addAction(menu->menuAction());
-    menu->menuAction()->setProperty("ElaIconType", QChar(icon));
+    menu->menuAction()->setProperty("ElaIconType", QChar::fromUcs2(icon));
     return menu;
 }
 
 QAction* ElaMenu::addElaIconAction(ElaIconType::IconName icon, const QString& text)
 {
     QAction* action = new QAction(text, this);
-    action->setProperty("ElaIconType", QChar(icon));
+    action->setProperty("ElaIconType", QChar::fromUcs2(icon));
     QMenu::addAction(action);
     return action;
 }
@@ -97,7 +97,7 @@ QAction* ElaMenu::addElaIconAction(ElaIconType::IconName icon, const QString& te
 {
     QAction* action = new QAction(text, this);
     action->setShortcut(shortcut);
-    action->setProperty("ElaIconType", QChar(icon));
+    action->setProperty("ElaIconType", QChar::fromUcs2(icon));
     QMenu::addAction(action);
     return action;
 }

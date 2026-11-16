@@ -228,7 +228,7 @@ void ElaDrawerHeader::paintEvent(QPaintEvent* event)
     const QPointF iconCenter(width() - 24.0, height() / 2.0 + (_isPressed ? 1.0 : 0.0));
     painter.translate(iconCenter);
     painter.rotate(_pExpandIconRotate);
-    painter.drawText(QRectF(-12.0, -12.0, 24.0, 24.0), Qt::AlignCenter, QChar(ElaIconType::AngleDown));
+    painter.drawText(QRectF(-12.0, -12.0, 24.0, 24.0), Qt::AlignCenter, QChar::fromUcs2(ElaIconType::AngleDown));
 
     painter.restore();
 }

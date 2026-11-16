@@ -61,7 +61,7 @@ void ElaTreeViewStyle::drawPrimitive(PrimitiveElement element, const QStyleOptio
                 iconFont.setPixelSize(eApp->getFontPixelSize() + 1);
                 painter->setFont(iconFont);
                 painter->setPen(ElaThemeColor(_themeMode, BasicText));
-                painter->drawText(indicatorRect, Qt::AlignVCenter | Qt::AlignRight, vopt->state.testFlag(QStyle::State_Open) ? QChar(ElaIconType::AngleDown) : QChar(ElaIconType::AngleRight));
+                painter->drawText(indicatorRect, Qt::AlignVCenter | Qt::AlignRight, vopt->state.testFlag(QStyle::State_Open) ? QChar::fromUcs2(ElaIconType::AngleDown) : QChar::fromUcs2(ElaIconType::AngleRight));
                 painter->restore();
             }
         }
@@ -183,7 +183,7 @@ void ElaTreeViewStyle::drawControl(ControlElement element, const QStyleOption* o
                     iconFont.setPixelSize(checkRect.width() * 0.85);
                     painter->setFont(iconFont);
                     painter->setPen(ElaThemeColor(ElaThemeType::Dark, BasicText));
-                    painter->drawText(checkRect, Qt::AlignCenter, QChar(ElaIconType::Check));
+                    painter->drawText(checkRect, Qt::AlignCenter, QChar::fromUcs2(ElaIconType::Check));
                 }
                 else if (vopt->checkState == Qt::PartiallyChecked)
                 {
