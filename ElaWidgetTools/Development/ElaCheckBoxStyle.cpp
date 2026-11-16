@@ -94,6 +94,22 @@ int ElaCheckBoxStyle::pixelMetric(PixelMetric metric, const QStyleOption* option
     return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
+QSize ElaCheckBoxStyle::sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& size, const QWidget* widget) const
+{
+    QSize contentsSize = QProxyStyle::sizeFromContents(type, option, size, widget);
+    if (type == QStyle::CT_CheckBox)
+    {
+        if (const QStyleOptionButton* bopt = qstyleoption_cast<const QStyleOptionButton*>(option))
+        {
+            const int indicatorWidth = pixelMetric(QStyle::PM_IndicatorWidth, option, widget);
+            const int textWidth = option->fontMetrics.horizontalAdvance(bopt->text);
+            const int requiredWidth = indicatorWidth + _labelSpacing + textWidth + 4;
+            contentsSize.setWidth(qMax(contentsSize.width(), requiredWidth));
+        }
+    }
+    return contentsSize;
+}
+
 QRect ElaCheckBoxStyle::subElementRect(SubElement element, const QStyleOption* option, const QWidget* widget) const
 {
     QRect subRect = QProxyStyle::subElementRect(element, option, widget);

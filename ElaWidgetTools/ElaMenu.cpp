@@ -21,7 +21,7 @@ ElaMenu::ElaMenu(QWidget* parent)
     setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setObjectName("ElaMenu");
-    setContentsMargins(eTheme->getShadowMargins());
+    setContentsMargins(0, 0, 0, 0);
     d->_menuStyle = new ElaMenuStyle(style());
     d->_menuStyle->setParent(this);
     setStyle(d->_menuStyle);
@@ -146,7 +146,7 @@ void ElaMenu::showEvent(QShowEvent* event)
     Q_EMIT menuShow();
     Q_D(ElaMenu);
     d->_finishShowAnimation();
-    const QMargins margins = eTheme->getShadowMargins();
+    const QMargins margins;
     const QPoint initialPos = pos();
     const QPoint cursorPos = QCursor::pos();
     QWidget* popupSource = d->_getPopupSource();
@@ -275,7 +275,7 @@ void ElaMenu::paintEvent(QPaintEvent* event)
     {
         QPainter painter(this);
         painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-        const QMargins margins = eTheme->getShadowMargins();
+        const QMargins margins;
         const QRect foregroundRect = rect().marginsRemoved(margins);
         if (foregroundRect.isEmpty())
         {

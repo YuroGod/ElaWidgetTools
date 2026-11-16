@@ -87,7 +87,7 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
         //container区域
         if (widget && widget->objectName() == "ElaComboBoxContainer")
         {
-            const QMargins margins = eTheme->getShadowMargins();
+            const QMargins margins;
             const bool isAnimating = _popup && _popup->getIsAnimating();
             const QRect foregroundRect = (isAnimating && _popup->getBodyRect().isValid()) ? _popup->getBodyRect() : option->rect.marginsRemoved(margins);
             const QRect shadowRect = foregroundRect.marginsAdded(margins);
@@ -96,6 +96,10 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             const int borderRadius = parent() ? qMax(3, parent()->property("pBorderRadius").toInt()) : 4;
             painter->save();
             painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+            // 弹窗窗口可能带有系统底色 先清空再绘制阴影与面板 避免浅色模式下出现黑边
+            painter->setCompositionMode(QPainter::CompositionMode_Source);
+            painter->fillRect(option->rect, Qt::transparent);
+            painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
             if (shadowOpacity > 0.005)
             {
                 eTheme->drawEffectShadow(painter, shadowRect, margins, borderRadius, shadowOpacity);
@@ -137,31 +141,31 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
             const bool isAnimating = _popup && _popup->getIsAnimating();
             const qreal popupOpacity = isAnimating ? _popup->getPopupOpacity() : 1.0;
             const qreal chromeOpacity = isAnimating ? _popup->getItemChromeOpacity() : 1.0;
-            int margin = 2;
             painter->save();
             const qreal baseOpacity = painter->opacity();
             painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
             painter->setOpacity(baseOpacity * popupOpacity * chromeOpacity);
             painter->setPen(Qt::NoPen);
             QPainterPath path;
-            QRect optionRect = option->rect;
-            optionRect.adjust(margin, margin, -margin, -margin);
+            QRect itemRect = option->rect.adjusted(2, 2, -2, -2);
 #ifndef Q_OS_WIN
-            optionRect.adjust(6, 0, -6, 0);
+            itemRect.adjust(6, 0, -6, 0);
 #endif
-            path.addRoundedRect(optionRect, 5, 5);
+            path.addRoundedRect(itemRect, 5, 5);
             const QColor background = ElaControlStyle::getItemBackgroundColor(_themeMode, option->state);
             painter->setBrush(ElaColorAnimation::getColor(widget, background, "ItemBackground", vopt->index));
             painter->drawPath(path);
             if (option->state.testFlag(QStyle::State_Selected))
             {
+                // 选中指示条限制在内容区域内 避免在非 Windows 平台压住首字
+                const qreal indicatorX = vopt->direction == Qt::RightToLeft ? itemRect.right() - 6 : itemRect.left() + 3;
                 painter->setBrush(ElaThemeColor(_themeMode, PrimaryNormal));
-                painter->drawRoundedRect(QRectF(optionRect.x() + 3, optionRect.y() + optionRect.height() * 0.2, 3, optionRect.height() * 0.6), 1.5, 1.5);
+                painter->drawRoundedRect(QRectF(indicatorX, itemRect.y() + itemRect.height() * 0.2, 3, itemRect.height() * 0.6), 1.5, 1.5);
             }
             // 文字绘制
             painter->setOpacity(baseOpacity * popupOpacity);
             painter->setPen(option->state.testFlag(QStyle::State_Enabled) ? ElaThemeColor(_themeMode, BasicText) : ElaThemeColor(_themeMode, BasicTextDisable));
-            QRect textRect = visualRect(vopt->direction, option->rect, option->rect.adjusted(12, 0, -12, 0));
+            QRect textRect = visualRect(vopt->direction, option->rect, itemRect.adjusted(12, 0, -12, 0));
             QString text = vopt->text;
             text.replace('\r', ' ').replace('\n', ' ');
             text = vopt->fontMetrics.elidedText(text, Qt::ElideRight, qMax(0, textRect.width()));
@@ -171,7 +175,7 @@ void ElaComboBoxStyle::drawControl(ControlElement element, const QStyleOption* o
                 painter->setOpacity(baseOpacity * popupOpacity * chromeOpacity);
                 painter->setBrush(Qt::NoBrush);
                 painter->setPen(ElaThemeColor(_themeMode, BasicText));
-                painter->drawRoundedRect(optionRect.adjusted(1, 1, -1, -1), 3, 3);
+                painter->drawRoundedRect(itemRect.adjusted(1, 1, -1, -1), 3, 3);
             }
             painter->restore();
         }

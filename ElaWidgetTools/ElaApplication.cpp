@@ -125,7 +125,10 @@ void ElaApplication::init()
     //默认字体
     QFont font = qApp->font();
     font.setPixelSize(d->_pFontPixelSize);
+#ifdef Q_OS_WIN
+    // Windows 使用微软雅黑保证中文观感 其他平台沿用系统字体以获取完整 Unicode 回退
     font.setFamily("Microsoft YaHei");
+#endif
     font.setHintingPreference(QFont::PreferNoHinting);
     qApp->setFont(font);
 #ifdef Q_OS_WIN

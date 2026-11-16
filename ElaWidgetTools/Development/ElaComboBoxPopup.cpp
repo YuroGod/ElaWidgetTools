@@ -64,6 +64,11 @@ void ElaComboBoxPopup::prepare()
         _container = container;
         container->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
         container->setAttribute(Qt::WA_TranslucentBackground);
+        container->setAttribute(Qt::WA_NoSystemBackground);
+        container->setAutoFillBackground(false);
+        QPalette containerPalette = container->palette();
+        containerPalette.setColor(QPalette::Window, Qt::transparent);
+        container->setPalette(containerPalette);
         container->setObjectName("ElaComboBoxContainer");
         container->setStyle(_comboBox->style());
         container->setGraphicsEffect(nullptr);
@@ -83,7 +88,7 @@ void ElaComboBoxPopup::prepare()
             delete item;
         }
         layout->addWidget(_comboBox->view());
-        layout->setContentsMargins(eTheme->getShadowMargins());
+        layout->setContentsMargins(0, 0, 0, 0);
         layout->setSpacing(0);
     }
     container->setMinimumSize(0, 0);
@@ -112,7 +117,7 @@ void ElaComboBoxPopup::open(int anchorRow, bool isDropDown)
     anchorRow = qBound(0, anchorRow, _comboBox->count() - 1);
     const int visibleRows = qMin(_comboBox->count(), qMax(1, _comboBox->maxVisibleItems()));
     const int firstRow = qBound(0, anchorRow - visibleRows / 2, _comboBox->count() - visibleRows);
-    const QMargins margins = eTheme->getShadowMargins();
+    const QMargins margins;
     int popupHeight = margins.top() + margins.bottom();
     for (int row = firstRow; row < firstRow + visibleRows; ++row)
     {
@@ -213,7 +218,7 @@ bool ElaComboBoxPopup::close()
         return false;
     }
     _revealAnimation->stop();
-    _fullBodyRect = _container->rect().marginsRemoved(eTheme->getShadowMargins());
+    _fullBodyRect = _container->rect();
     _comboTargetRect = _getComboTargetRect();
     _startBodyRect = (_isAnimating && _bodyRect.isValid()) ? _bodyRect : _fullBodyRect;
     _startOffsetY = _isAnimating ? _contentOffsetY : 0;
@@ -330,7 +335,7 @@ void ElaComboBoxPopup::_resetAnimation()
             layout->setEnabled(true);
             layout->activate();
         }
-        _fullBodyRect = _container->rect().marginsRemoved(eTheme->getShadowMargins());
+        _fullBodyRect = _container->rect();
         _bodyRect = _fullBodyRect;
     }
     if (_comboBox && _comboBox->view())

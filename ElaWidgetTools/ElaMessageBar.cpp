@@ -31,7 +31,6 @@ ElaMessageBar::ElaMessageBar(ElaMessageBarType::PositionPolicy policy, ElaMessag
     d->_pOpacity = 1;
     parent->installEventFilter(this);
     int fontPixelSize = eApp->getFontPixelSize();
-    setFont(QFont("微软雅黑"));
     d->_closeButton = new ElaIconButton(ElaIconType::Xmark, fontPixelSize + 3, d->_closeButtonWidth, 30, this);
     d->_closeButton->setBorderRadius(5);
     connect(d->_closeButton, &ElaIconButton::clicked, d, &ElaMessageBarPrivate::messageBarEnd);

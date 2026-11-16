@@ -1,10 +1,13 @@
 #include "ElaMenuBar.h"
 
+#include "ElaApplication.h"
 #include "ElaIcon.h"
 #include "ElaMenu.h"
 #include "ElaMenuBarStyle.h"
+#include "ElaTheme.h"
 
 #include <QEvent>
+#include <QIcon>
 #include <QPainter>
 #include <QToolButton>
 
@@ -17,7 +20,7 @@ ElaMenuBar::ElaMenuBar(QWidget* parent)
     menuBarStyle->setParent(this);
     setStyle(menuBarStyle);
     QToolButton* tool = this->findChild<QToolButton*>();
-    if (tool->objectName() == "qt_menubar_ext_button")
+    if (tool && tool->objectName() == "qt_menubar_ext_button")
     {
         QMenu* oldMenu = tool->menu();
         ElaMenu* menu = new ElaMenu(this);
@@ -27,6 +30,16 @@ ElaMenuBar::ElaMenuBar(QWidget* parent)
         {
             oldMenu->deleteLater();
         }
+        // 溢出按钮由 Ela 样式绘制下拉箭头 同时保留主题色图标作为系统样式回退
+        auto updateArrowIcon = [tool]() {
+            const QColor iconColor = ElaThemeColor(eTheme->getThemeMode(), BasicText);
+            tool->setIcon(ElaIcon::getInstance()->getElaIcon(ElaIconType::AngleDown, eApp->getFontPixelSize() + 5, iconColor));
+        };
+        updateArrowIcon();
+        connect(eTheme, &ElaTheme::themeModeChanged, this, [updateArrowIcon](ElaThemeType::ThemeMode) {
+            updateArrowIcon();
+        });
+        tool->setStyle(menuBarStyle);
         tool->setMenu(menu);
     }
 }

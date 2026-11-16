@@ -32,7 +32,7 @@ void ElaMenuStyle::drawPrimitive(PrimitiveElement element, const QStyleOption* o
         // 高性能阴影
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing);
-        const QMargins margins = eTheme->getShadowMargins();
+        const QMargins margins;
         eTheme->drawEffectShadow(painter, option->rect, margins, 6);
         // 背景绘制
         const QRect foregroundRect = option->rect.marginsRemoved(margins);
@@ -120,11 +120,18 @@ void ElaMenuStyle::drawControl(ControlElement element, const QStyleOption* optio
                 {
                     QStringList textList = mopt->text.split("\t");
                     painter->setPen(foregroundColor);
-
-                    painter->drawText(QRectF(menuRect.x() + (_isAnyoneItemHasIcon ? contentPadding + textLeftSpacing : 0) + _iconWidth, menuRect.y(), menuRect.width(), menuRect.height()), Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, textList[0]);
-                    if (textList.count() > 1)
+                    const qreal rightPadding = mopt->menuItemType == QStyleOptionMenuItem::SubMenu ? 25 : contentPadding;
+                    const qreal textLeft = menuRect.x() + contentPadding + (_isAnyoneItemHasIcon ? textLeftSpacing + _iconWidth : 0);
+                    const qreal textRight = menuRect.x() + menuRect.width() - rightPadding;
+                    const QString shortcutText = textList.value(1);
+                    const int shortcutWidth = shortcutText.isEmpty() ? 0 : painter->fontMetrics().horizontalAdvance(shortcutText);
+                    const int shortcutSpacing = shortcutText.isEmpty() ? 0 : 16;
+                    const QRectF textRect(textLeft, menuRect.y(), qMax(0.0, textRight - textLeft - shortcutWidth - shortcutSpacing), menuRect.height());
+                    painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, textList[0]);
+                    if (!shortcutText.isEmpty())
                     {
-                        painter->drawText(QRectF(menuRect.x() + contentPadding + _iconWidth + textLeftSpacing, menuRect.y(), menuRect.width() - (contentPadding * 2 + _iconWidth + textLeftSpacing), menuRect.height()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, textList[1]);
+                        const QRectF shortcutRect(textRight - shortcutWidth, menuRect.y(), shortcutWidth, menuRect.height());
+                        painter->drawText(shortcutRect, Qt::AlignRight | Qt::AlignVCenter | Qt::TextSingleLine, shortcutText);
                     }
                 }
                 //展开图标
@@ -193,11 +200,23 @@ QSize ElaMenuStyle::sizeFromContents(ContentsType type, const QStyleOption* opti
             }
             QSize menuItemSize = QProxyStyle::sizeFromContents(type, option, size, widget);
             const ElaMenu* menu = dynamic_cast<const ElaMenu*>(widget);
-            if (menu->isHasIcon() || mopt->menuHasCheckableItems)
+            const bool hasElaIcon = menu && menu->isHasIcon();
+            const bool hasCheckableItem = mopt->menuHasCheckableItems || mopt->checkType != QStyleOptionMenuItem::NotCheckable;
+            if (hasElaIcon || hasCheckableItem)
             {
                 _isAnyoneItemHasIcon = true;
             }
-            if (menu->isHasChildMenu())
+            if (hasElaIcon)
+            {
+                const int iconWidth = _iconWidth > 0 ? _iconWidth : qRound(_pMenuItemHeight * 0.7);
+                // 自绘图标不参与 QMenu 的 maxIconWidth 计算 需要补足图标列及与文字间的间距
+                menuItemSize.setWidth(menuItemSize.width() + qMax(0, iconWidth - mopt->maxIconWidth) + 8);
+            }
+            else if (hasCheckableItem && mopt->maxIconWidth == 0)
+            {
+                menuItemSize.setWidth(menuItemSize.width() + 8);
+            }
+            if (menu && menu->isHasChildMenu())
             {
                 return QSize(menuItemSize.width() + 20, _pMenuItemHeight);
             }
